@@ -22,11 +22,17 @@ $time = $time.GetDateTimeFormats()[109]
 $inactive = $date + ' ' + $time
 
 # Connect to Qlik Sense
-$myFQDN=(Get-WmiObject win32_computersystem).DNSHostName+"."+(Get-WmiObject win32_computersystem).Domain
-$myFQDN = $myFQDN.ToLower()
+$remoteserver = "servername.company.com"
+$localserver = Get-Service -name QlikSenseProxyService -ErrorAction SilentlyContinue
 
 # Connect to Qlik-CLI
-Connect-Qlik -ComputerName $($myFQDN) 
+If($null-ne $localserver){
+    Connect-Qlik -trustallcerts |out-null
+    Write-Host "Connecting LocalServer"
+}else {
+    Connect-Qlik -trustallcerts -ComputerName $($remotetserver)|out-null
+    Write-Host "Connecting $($remotetserver)"
+    }
 
 function Remove-QlikUserAccessType {
   [CmdletBinding()]
